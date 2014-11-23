@@ -57,6 +57,7 @@
 }
 .projects .project-progress {
   position: relative;
+<<<<<<< HEAD:pyspider/webui/static/index.css
   width: 10%;
 }
 .projects .project-progress.progress-all {
@@ -78,6 +79,8 @@
 .projects .project-progress .progress .progress-bar {
   -webkit-transition: none;
   transition: none;
+=======
+>>>>>>> parent of 723085f... first runable version,TODO: test:webui/static/index.css
 }
 .projects .project-actions {
   width: 400px;

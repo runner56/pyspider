@@ -52,9 +52,15 @@ class ProjectDB(SQLiteMixin, BaseProjectDB, BaseDB):
         return None
 
     def check_update(self, timestamp, fields=None):
+<<<<<<< HEAD:pyspider/database/sqlite/projectdb.py
         where = "`updatetime` >= %f" % timestamp
         return self._select2dic(what=fields, where=where)
 
     def drop(self, name):
         where = "`name` = %s" % self.placeholder
         return self._delete(where=where, where_values=(name, ))
+=======
+        what = ','.join(('`%s`' % x for x in fields)) if fields else '*'
+        where = "updatetime >= %f" % timestamp
+        return self._select2dic(self.__tablename__, what=what, where=where)
+>>>>>>> parent of 723085f... first runable version,TODO: test:database/sqlite/projectdb.py

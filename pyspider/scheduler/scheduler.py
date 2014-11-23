@@ -18,7 +18,7 @@ logger = logging.getLogger('scheduler')
 
 
 class Scheduler(object):
-    UPDATE_PROJECT_INTERVAL = 5*60
+    _update_project_interval = 5*60
     default_schedule = {
             'priority': 0,
             'retries': 3,
@@ -75,6 +75,7 @@ class Scheduler(object):
 
     def _update_projects(self):
         now = time.time()
+<<<<<<< HEAD:pyspider/scheduler/scheduler.py
         if not self._force_update_project and self._last_update_project + self.UPDATE_PROJECT_INTERVAL > now:
             return
         for project in self.projectdb.check_update(self._last_update_project):
@@ -92,10 +93,17 @@ class Scheduler(object):
 
         # load task queue when project is running and delete task_queue when project is stoped
         if project['status'] in ('RUNNING', 'DEBUG'):
+=======
+        if self._last_update_project + self._update_project_interval > now:
+            return
+        for project in self.projectdb.check_update(now):
+            self.projects[project['name']] = project
+>>>>>>> parent of 723085f... first runable version,TODO: test:scheduler/scheduler.py
             if project['name'] not in self.task_queue:
                 self._load_tasks(project['name'])
             self.task_queue[project['name']].rate = project['rate']
             self.task_queue[project['name']].burst = project['burst']
+<<<<<<< HEAD:pyspider/scheduler/scheduler.py
 
             # update project runtime info from processing by sending a on_get_info request,
             # result is catched by on_request
@@ -117,6 +125,8 @@ class Scheduler(object):
                 self.task_queue[project['name']].rate = 0
                 self.task_queue[project['name']].burst = 0
                 del self.task_queue[project['name']]
+=======
+>>>>>>> parent of 723085f... first runable version,TODO: test:scheduler/scheduler.py
 
     scheduler_task_fields = ['taskid', 'project', 'schedule', ]
     def _load_tasks(self, project):
@@ -130,6 +140,7 @@ class Scheduler(object):
             priority = _schedule.get('priority', self.default_schedule['priority'])
             exetime = _schedule.get('exetime', self.default_schedule['exetime'])
             self.task_queue[project].put(taskid, priority, exetime)
+<<<<<<< HEAD:pyspider/scheduler/scheduler.py
 
         if self.projects[project]['status'] in ('RUNNING', 'DEBUG'):
             self.task_queue[project].rate = self.projects[project]['rate']
@@ -150,6 +161,13 @@ class Scheduler(object):
         for each in ('taskid', 'project', 'url', ):
             if each not in task or not task[each]:
                 logger.error('%s not in task: %s' % (each, unicode(task)[:200]))
+=======
+
+    def task_verify(self, task):
+        for each in ('taskid', 'project', 'url', ):
+            if each not in task:
+                logger.error('each not in task: %s' % unicode(task[:200]))
+>>>>>>> parent of 723085f... first runable version,TODO: test:scheduler/scheduler.py
                 return False
         if task['project'] not in self.task_queue:
             logger.error('unknow project: %s' % task['project'])
@@ -231,6 +249,7 @@ class Scheduler(object):
             pass
         return cnt
 
+<<<<<<< HEAD:pyspider/scheduler/scheduler.py
     def _check_cronjob(self):
         """
         check projects cronjob tick, return True when a new tick is sended
@@ -265,6 +284,8 @@ class Scheduler(object):
         return True
 
     request_task_fields = ['taskid', 'project', 'url', 'status', 'fetch', 'process', 'track', 'lastcrawltime']
+=======
+>>>>>>> parent of 723085f... first runable version,TODO: test:scheduler/scheduler.py
     def _check_select(self):
         while self._send_buffer:
             _task = self._send_buffer.pop()
@@ -335,6 +356,15 @@ class Scheduler(object):
     def run(self):
         logger.info("loading projects")
         self._load_projects()
+<<<<<<< HEAD:pyspider/scheduler/scheduler.py
+=======
+        for i, project in enumerate(self.projects.keys()):
+            self._load_tasks(project)
+            self.task_queue[project].rate = self.projects[project]['rate']
+            self.task_queue[project].burst = self.projects[project]['burst']
+            logger.info("loading tasks from %s loaded %d tasks -- %d/%d" % (project, len(self.task_queue[project]),
+                i+1, len(self.projects)))
+>>>>>>> parent of 723085f... first runable version,TODO: test:scheduler/scheduler.py
 
         while not self._quit:
             try:
@@ -432,14 +462,18 @@ class Scheduler(object):
         restart = False
         if _schedule.get('itag') and _schedule['itag'] != old_schedule.get('itag'):
             restart = True
-        elif _schedule.get('age', self.default_schedule['age']) + (old_task['lastcrawltime'] or 0) < now:
+        elif _schedule['age'] + old_task['lastcrawltime'] < now:
             restart = True
         elif _schedule.get('force_update'):
             restart = True
 
         if not restart:
+<<<<<<< HEAD:pyspider/scheduler/scheduler.py
             logger.debug('ignore newtask %(project)s:%(taskid)s %(url)s', task)
             return
+=======
+            logger.info('ignore newtask %(project)s:%(taskid)s %(url)s' % task)
+>>>>>>> parent of 723085f... first runable version,TODO: test:scheduler/scheduler.py
 
         task['status'] = self.taskdb.ACTIVE
         self.update_task(task)
@@ -479,7 +513,6 @@ class Scheduler(object):
         called by task_status
         '''
         task['status'] = self.taskdb.SUCCESS
-        task['lastcrawltime'] = time.time()
         self.update_task(task)
 
         project = task['project']
@@ -512,7 +545,6 @@ class Scheduler(object):
 
         if retried >= retries:
             task['status'] = self.taskdb.FAILED
-            task['lastcrawltime'] = time.time()
             self.update_task(task)
 
             project = task['project']
@@ -525,7 +557,6 @@ class Scheduler(object):
         else:
             task['schedule']['retried'] = retried + 1
             task['schedule']['exetime'] = time.time() + next_exetime
-            task['lastcrawltime'] = time.time()
             self.update_task(task)
             self.put_task(task)
 

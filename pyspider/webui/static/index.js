@@ -61,6 +61,7 @@ $(function() {
       alert('project name not allowed!');
     }
   });
+<<<<<<< HEAD:pyspider/webui/static/index.js
 
   $('.project-run').on('click', function() {
     var project = $(this).parents('tr').data("name");
@@ -116,4 +117,6 @@ $(function() {
   }
   window.setInterval(update_counters, 15*1000);
   update_counters();
+=======
+>>>>>>> parent of 723085f... first runable version,TODO: test:webui/static/index.js
 });

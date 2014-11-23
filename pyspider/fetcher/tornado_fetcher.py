@@ -356,10 +356,14 @@ class Fetcher(object):
                         break
                     if self.http_client.free_size() <= 0:
                         break
+<<<<<<< HEAD:pyspider/fetcher/tornado_fetcher.py
                     task = self.inqueue.get_nowait()
                     # FIXME: decode unicode_obj should used after data selete from
                     # database, it's used here for performance
                     task = utils.decode_unicode_obj(task)
+=======
+                    task = self.inqueue.get()
+>>>>>>> parent of 723085f... first runable version,TODO: test:fetcher/tornado_fetcher.py
                     self.fetch(task)
                 except Queue.Empty:
                     break
@@ -369,7 +373,12 @@ class Fetcher(object):
                     logger.exception(e)
                     break
 
+<<<<<<< HEAD:pyspider/fetcher/tornado_fetcher.py
         tornado.ioloop.PeriodicCallback(queue_loop, 100).start()
+=======
+        tornado.ioloop.PeriodicCallback(queue_loop, 500).start()
+        tornado.ioloop.IOLoop.instance().start()
+>>>>>>> parent of 723085f... first runable version,TODO: test:fetcher/tornado_fetcher.py
         self._running = True
         try:
             tornado.ioloop.IOLoop.instance().start()

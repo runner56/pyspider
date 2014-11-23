@@ -10,6 +10,7 @@ import sys
 import time
 import logging
 import logging.config
+<<<<<<< HEAD
 
 import click
 from pyspider.database import connect_database
@@ -133,6 +134,49 @@ def scheduler(ctx, xmlrpc, xmlrpc_host, xmlrpc_port,
 
     if xmlrpc:
         run_in_thread(scheduler.xmlrpc_run, port=xmlrpc_port, bind=xmlrpc_host)
+=======
+from Queue import Queue
+from database.sqlite import taskdb, projectdb
+
+logging.config.fileConfig("logging.conf")
+
+def run_in_thread(func, *args, **kwargs):
+    from threading import Thread
+    thread = Thread(target=func, args=args, kwargs=kwargs)
+    thread.daemon = True
+    thread.start()
+    return thread
+
+def run_in_subprocess(func, *args, **kwargs):
+    from multiprocessing import Process
+    thread = Process(target=func, args=args, kwargs=kwargs)
+    thread.daemon = True
+    thread.start()
+    return thread
+
+def get_taskdb():
+    return taskdb.TaskDB('./data/task.db')
+
+def get_projectdb():
+    return projectdb.ProjectDB('./data/project.db')
+
+queue_maxsize = 100
+newtask_queue = Queue(queue_maxsize)
+status_queue = Queue(queue_maxsize)
+scheduler2fetcher = Queue(queue_maxsize)
+fetcher2processor = Queue(queue_maxsize)
+
+scheduler_xmlrpc_port = 23333
+fetcher_xmlrpc_port = 24444
+debug = True
+
+def run_scheduler():
+    from scheduler import Scheduler
+    scheduler = Scheduler(taskdb=get_taskdb(), projectdb=get_projectdb(),
+            newtask_queue=newtask_queue, status_queue=status_queue, out_queue=scheduler2fetcher)
+
+    run_in_thread(scheduler.xmlrpc_run, port=scheduler_xmlrpc_port)
+>>>>>>> parent of 723085f... first runable version,TODO: test
     scheduler.run()
 
 @cli.command()

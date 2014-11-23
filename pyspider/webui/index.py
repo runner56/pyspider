@@ -55,6 +55,7 @@ def project_update():
         return 'ok', 200
     else:
         return 'update error', 500
+<<<<<<< HEAD:pyspider/webui/index.py
 
 @app.route('/counter')
 def counter():
@@ -104,3 +105,5 @@ def robots():
     return """User-agent: *
 Disallow: /
 """, 200, {'Content-Type': 'text/plain'}
+=======
+>>>>>>> parent of 723085f... first runable version,TODO: test:webui/index.py

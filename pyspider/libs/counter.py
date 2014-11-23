@@ -20,9 +20,6 @@ class TotalCounter(BaseCounter):
     def event(self, value):
         self.cnt += value
 
-    def value(self, value):
-        self.cnt = value
-
     @property
     def avg(self):
         return self.cnt
@@ -30,9 +27,6 @@ class TotalCounter(BaseCounter):
     @property
     def sum(self):
         return self.cnt
-
-    def empty(self):
-        return self.cnt == 0
 
 class AverageWindowCounter(BaseCounter):
     def __init__(self, window_size=300):
@@ -42,8 +36,6 @@ class AverageWindowCounter(BaseCounter):
     def event(self, value=1):
         self.values.append(value)
 
-    value = event
-        
     @property
     def avg(self):
         return float(self.sum) / len(self.values)
@@ -85,9 +77,6 @@ class TimebaseAverageWindowCounter(BaseCounter):
         else:
             self.cache_value += value
         return self
-
-    def value(self, value):
-        self.cache_value = value
 
     def _trim_window(self):
         now = time.time()
@@ -183,15 +172,6 @@ class CounterManager(DictMixin):
         if key not in self.counters:
             self.counters[key] = self.cls()
         self.counters[key].event(value)
-        return self
-
-    def value(self, key, value=1):
-        if isinstance(key, basestring):
-            key = (key, )
-        assert isinstance(key, tuple), "event key type error"
-        if key not in self.counters:
-            self.counters[key] = self.cls()
-        self.counters[key].value(value)
         return self
 
     def trim(self):

@@ -39,10 +39,14 @@ class TaskDB(SQLiteMixin, SplitTableMixin, BaseTaskDB, BaseDB):
     def _parse(self, data):
         for each in ('schedule', 'fetch', 'process', 'track'):
             if each in data:
+<<<<<<< HEAD:pyspider/database/sqlite/taskdb.py
                 if data[each]:
                     data[each] = json.loads(data[each])
                 else:
                     data[each] = {}
+=======
+                data[each] = json.loads(data[each])
+>>>>>>> parent of 723085f... first runable version,TODO: test:database/sqlite/taskdb.py
         return data
 
     def _stringify(self, data):
